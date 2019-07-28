@@ -1,4 +1,4 @@
-<?php 
+<?php   
 
 //This function converts the json returend from API call to a php
 function returnobj($outputfromAPI){
@@ -6,6 +6,22 @@ function returnobj($outputfromAPI){
     $phpobj = json_decode($str);
     return $phpobj;
 }
+
+function returnvalue ($array_product, $totalproduct, $orderID, $valuetofind){
+    for ($x = 0; $x <= $totalproduct; $x++){
+        if ($array_product[$x]->id == $orderID){
+            if ($array_product[$x]->pid == 1){
+                $field = $array_product[$x]->customfields->customfield;
+                for ($y = 0; $y <= 4; $y++){
+                    if ($field[$y]->name == $valuetofind){
+                        return $field[$y]->value;
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 add_hook('AcceptOrder', 1, function($vars) {
 
@@ -30,24 +46,22 @@ add_hook('AcceptOrder', 1, function($vars) {
     $results_getclientdetails_obj = returnobj($results_getclientdetails);
     $total_active_order = $results_getclientdetails_obj->stats->productsnumactiveother;
 
-    logActivity("order",0); 
-    logActivity($total_active_order,0);
 
     //Fetching custom field data
 
     $postData_getclientsproduct = array ('clientid' => $userid, 'stats' => true, 'limitnum' => ($total_active_order+1000),);
     $results_getclientsproduct = localAPI('GetClientsProducts',$postData_getclientsproduct);
 
-    logActivity(json_encode($results_getclientsproduct));
-
     $results_getclientsproduct_obj = returnobj($results_getclientsproduct);
     $list_product = $results_getclientsproduct_obj->products->product;
     $total_result = $results_getclientsproduct_obj->totalresults;
 
-
-
-
-    logActivity(json_encode($results_getclientsproduct_obj->products->product[0]->customfields),0);
-
-
+    $ip = returnvalue($list_product,$total_result,$orderid,"Server IP");
+    $username = returnvalue($list_product,$total_result,$orderid,"Username");
+    $password = returnvalue($list_product,$total_result,$orderid,"Password");
+    $port = returnvalue($list_product,$total_result,$orderid,"SSH Port");
+    logActivity($ip,0);
+    logActivity($username,0);
+    logActivity($password,0);
+    logActivity($port,0);
 });

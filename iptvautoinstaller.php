@@ -1,5 +1,6 @@
 <?php   
 
+
 //This function converts the json returend from API call to a php
 function returnobj($outputfromAPI){
     $str = json_encode($outputfromAPI);
@@ -64,4 +65,18 @@ add_hook('AcceptOrder', 1, function($vars) {
     logActivity($username,0);
     logActivity($password,0);
     logActivity($port,0);
+
+
+    // When adding the code below this, the WHMCS gives an error
+
+
+    logActivity("connecting through ssh",0);
+    $conn = ssh2_connect('185.132.178.253',22);
+    ssh2_auth_password($conn, 'root', 'drwPNvghVCb8nLQ6');
+    $stream = ssh2_exec($conn, 'ls');
+    stream_set_blocking($stream, true);
+    $stream_out = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
+    $output = stream_get_contents($stream_out);
+    $str = json_encode($output);
+    logActivity($str,0);
 });

@@ -71,8 +71,8 @@ add_hook('AcceptOrder', 1, function($vars) {
 
 
     logActivity("connecting through ssh",0);
-    $conn = ssh2_connect('185.132.178.253',22);
-    ssh2_auth_password($conn, 'root', 'drwPNvghVCb8nLQ6');
+    $conn = ssh2_connect('url',22);
+    ssh2_auth_password($conn, 'root', 'password');
     $stream = ssh2_exec($conn, 'ls');
     stream_set_blocking($stream, true);
     $stream_out = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);

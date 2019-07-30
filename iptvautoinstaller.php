@@ -26,7 +26,7 @@ function returnvalue ($array_product, $totalproduct, $orderID, $valuetofind){
 function connect ($ip, $username, $password, $port){
     $conn = ssh2_connect($ip,$port);
     ssh2_auth_password($conn, $username, $password);
-    return $conn   
+    return $conn;
 }
 
 function execute_command($conn,$command){
@@ -84,19 +84,28 @@ add_hook('AcceptOrder', 1, function($vars) {
     logActivity("connecting through ssh",0);
     
     $conn = connect($ip,$username,$password,$port);
-    $output = execute_command($conn,'sudo uname -r');
-    $str = json_encode($output);
-    logActivity($str,0);
+    $output = execute_command($conn,'sudo uname -o');
+    if (strpos($output, 'sudo') !== false) {
+        logActivity("Server not linux",0);
+    } elseif (strpos($output, 'Linux') !== false) {
+        logActivity("Server is linux")    
+        $output = execute_command($conn,'sudo dpkg --get-selections | grep apache2');
+        if ($output == ""){
+            $output = execute_command($conn,'sudo apt install -y apache2');
+        }
+        logActivity($output,0);
 
-    $output = execute_command($conn,'sudo dpkg --get-selections | grep apache2');
-    $str = json_encode($output);
-    logActivity($str,0);
+        $output = execute_command($conn,'sudo dpkg --get-selections | grep mysql-server');
+        if ($output == ""){
+            $output = execute_command($conn,'sudo apt install -y mysql-server');
+        }
+        logActivity($output,0);
 
-    $output = execute_command($conn,'sudo dpkg --get-selections | grep mysql');
-    $str = json_encode($output);
-    logActivity($str,0);
+        $output = execute_command($conn,'sudo dpkg --get-selections | grep php7.');
+        if ($output == ""){
+            $output = execute_command($conn, 'sudo apt install -y php7.2 libapache2-mod-php7.2 php-mysql');
+        }
+        logActivity($output,0);
+    }
 
-    $output = execute_command($conn,'sudo dpkg --get-selections | grep php7.');
-    $str = json_encode($output);
-    logActivity($str,0);
 });

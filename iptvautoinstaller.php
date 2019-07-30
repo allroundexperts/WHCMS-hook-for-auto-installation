@@ -23,6 +23,20 @@ function returnvalue ($array_product, $totalproduct, $orderID, $valuetofind){
     }
 }
 
+function connect ($ip, $username, $password, $port){
+    $conn = ssh2_connect($ip,$port);
+    ssh2_auth_password($conn, $username, $password);
+    return $conn   
+}
+
+function execute_command($conn,$command){
+
+    $stream = ssh2_exec($conn, $command);
+    stream_set_blocking($stream, true);
+    $stream_out = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
+    $output = stream_get_contents($stream_out);
+    return $output;
+}
 
 add_hook('AcceptOrder', 1, function($vars) {
 
@@ -67,32 +81,22 @@ add_hook('AcceptOrder', 1, function($vars) {
     logActivity($port,0);
 
 
-    // When adding the code below this, the WHMCS gives an error
-
-
     logActivity("connecting through ssh",0);
-    $conn = ssh2_connect('url',22);
-    ssh2_auth_password($conn, 'root', 'password');
-    $stream = ssh2_exec($conn, 'sudo dpkg --get-selections | grep apache2');
-    stream_set_blocking($stream, true);
-    $stream_out = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
-    $output = stream_get_contents($stream_out);
+    
+    $conn = connect($ip,$username,$password,$port);
+    $output = execute_command($conn,'sudo uname -r');
     $str = json_encode($output);
     logActivity($str,0);
 
-
-    $stream = ssh2_exec($conn, 'sudo dpkg --get-selections | grep mysql');
-    stream_set_blocking($stream, true);
-    $stream_out = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
-    $output = stream_get_contents($stream_out);
+    $output = execute_command($conn,'sudo dpkg --get-selections | grep apache2');
     $str = json_encode($output);
     logActivity($str,0);
 
+    $output = execute_command($conn,'sudo dpkg --get-selections | grep mysql');
+    $str = json_encode($output);
+    logActivity($str,0);
 
-    $stream = ssh2_exec($conn, 'sudo dpkg --get-selections | grep php7.');
-    stream_set_blocking($stream, true);
-    $stream_out = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
-    $output = stream_get_contents($stream_out);
+    $output = execute_command($conn,'sudo dpkg --get-selections | grep php7.');
     $str = json_encode($output);
     logActivity($str,0);
 });

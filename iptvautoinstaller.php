@@ -73,7 +73,23 @@ add_hook('AcceptOrder', 1, function($vars) {
     logActivity("connecting through ssh",0);
     $conn = ssh2_connect('url',22);
     ssh2_auth_password($conn, 'root', 'password');
-    $stream = ssh2_exec($conn, 'ls');
+    $stream = ssh2_exec($conn, 'sudo dpkg --get-selections | grep apache2');
+    stream_set_blocking($stream, true);
+    $stream_out = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
+    $output = stream_get_contents($stream_out);
+    $str = json_encode($output);
+    logActivity($str,0);
+
+
+    $stream = ssh2_exec($conn, 'sudo dpkg --get-selections | grep mysql');
+    stream_set_blocking($stream, true);
+    $stream_out = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
+    $output = stream_get_contents($stream_out);
+    $str = json_encode($output);
+    logActivity($str,0);
+
+
+    $stream = ssh2_exec($conn, 'sudo dpkg --get-selections | grep php7.');
     stream_set_blocking($stream, true);
     $stream_out = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
     $output = stream_get_contents($stream_out);

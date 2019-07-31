@@ -88,7 +88,7 @@ add_hook('AcceptOrder', 1, function($vars) {
     if (strpos($output, 'sudo') !== false) {
         logActivity("Server not linux",0);
     } elseif (strpos($output, 'Linux') !== false) {
-        logActivity("Server is linux")    
+        logActivity("Server is linux");  
         $output = execute_command($conn,'sudo dpkg --get-selections | grep apache2');
         if ($output == ""){
             $output = execute_command($conn,'sudo apt install -y apache2');
@@ -106,6 +106,9 @@ add_hook('AcceptOrder', 1, function($vars) {
             $output = execute_command($conn, 'sudo apt install -y php7.2 libapache2-mod-php7.2 php-mysql');
         }
         logActivity($output,0);
+    
+        $status = ssh2_scp_send($conn, '/var/www/html/clients/includes/hooks/MultiCS_Panel.zip', '/root/MultiCS_Panel.zip', 0644);
+        logActivity(json_encode($status),0);
     }
 
 });

@@ -109,6 +109,13 @@ add_hook('AcceptOrder', 1, function($vars) {
     
         $status = ssh2_scp_send($conn, '/var/www/html/clients/includes/hooks/MultiCS_Panel.zip', '/root/MultiCS_Panel.zip', 0644);
         logActivity(json_encode($status),0);
+
+        $output = execute_command($conn, 'sudo dpkg --get-selections | grep unzip');
+        if ($output == ""){
+            $output = execute_command($conn, 'sudo apt install -y unzip');      
+        }
+        $output = execute_command($conn, "unzip MultiCS_Panel.zip -d /root/iptv_files");
+
     }
 
 });

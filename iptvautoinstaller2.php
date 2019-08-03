@@ -10,7 +10,7 @@ add_hook('AcceptOrder', 1, function($vars) {
     $initializeObj = new Main($orderId);
     $output = $initializeObj->getCustomFields();
     logActivity(json_encode($output),0);
-
+    $initializeObj->checkServer($output[0], $output[1], $output[2], $output[3]);
 
 
 

@@ -3,11 +3,13 @@
 
 
 require_once ('/var/www/html/clients/includes/hooks/libraries/Classes/Utilities.php');
+require_once ('/var/www/html/clients/includes/hooks/libraries/Classes/Connect implements IConnect.php');
 
 
 class Main {
 	private $orderID;
 	private $helperFunctions;
+	private $connection;
 	
 	function __construct($order)
 	{
@@ -46,11 +48,31 @@ class Main {
 	    return array($ip, $username, $password, $port);
 	}
 	
-	// public checkServer(){
+	public function checkServer($url, $username, $password, $port){
+		logActivity("Printing values 2",0);
+		logActivity($url,0);
+		logActivity($username,0);
+		logActivity($password,0);
+		logActivity($port,0);
 
-	// }
+		$this->connection = new Connect($url, $username, $password, $port);
+		$conn = $this->connection->connect();
+		$output = $this->connection->executeCommand($conn, "sudo uname -o");
+		logActivity($output,0);
+
+
+		if (strpos($output, 'sudo') !== false) {
+        	logActivity("Server not linux",0);
+        	return 0;
+	    } elseif (strpos($output, 'Linux') !== false) {
+	        logActivity("Server is linux");
+	        return 1;
+	    }
+	}
 	
-	// public transferFiles();
+	// public function transferFiles(){
+		
+	// }
 	
 	// public installPanel();
 }

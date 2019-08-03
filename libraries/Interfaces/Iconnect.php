@@ -7,9 +7,9 @@ interface Iconnect
 	private $port;
 	private $url;
 
-	public connect();
-	public executeCommand($connection, $command);
-	public transferFile($source, $destination);
+	// public connect();
+	public executeCommand($command);
+	// public transferFile($source, $destination);
 }
 
 

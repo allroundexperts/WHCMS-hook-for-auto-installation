@@ -43,11 +43,6 @@ class Main {
 	    $password = $this->helperFunctions->returnvalue($list_product,$total_result,$this->orderID,"Password");
 	    $port = $this->helperFunctions->returnvalue($list_product,$total_result,$this->orderID,"SSH Port");
 	    
-	    // logActivity($ip,0);
-	    // logActivity($username,0);
-	    // logActivity($password,0);
-	    // logActivity($port,0);
-
 	    return array($ip, $username, $password, $port);
 	}
 	

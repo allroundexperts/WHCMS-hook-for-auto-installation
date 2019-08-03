@@ -2,7 +2,6 @@
 
 
 include ('/var/www/html/clients/includes/hooks/libraries/Interfaces/Iconnect.php');
-// include ('/home/hamza/Desktop/freelancing/WHCMS-hook-for-auto-installation/libraries/Interfaces/Iconnect.php');
 
 class Connect implements Iconnect {
 	private $username;

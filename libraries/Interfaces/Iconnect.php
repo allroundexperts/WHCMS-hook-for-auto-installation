@@ -1,6 +1,6 @@
 <?php  
 
-interface Connect
+interface Iconnect
 {
 	private $username;
 	private $password;

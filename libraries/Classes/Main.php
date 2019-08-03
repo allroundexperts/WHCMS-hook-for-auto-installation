@@ -70,11 +70,41 @@ class Main {
 	    }
 	}
 	
-	// public function transferFiles(){
-		
-	// }
+	public function transferFiles($source, $destination){
+		$conn = $this->connection->connect();
+		$status = ssh2_scp_send($conn, $source, $destination, 0644);
+        logActivity(json_encode($status),0);
+        return $status;
+	}
 	
-	// public installPanel();
+	public function installPanel(){
+		$conn = $this->connection->connect();
+
+		$output = $this->connection->executeCommand($conn,'sudo dpkg --get-selections | grep apache2');
+        if ($output == ""){
+            $output = $this->connection->executeCommand($conn,'sudo apt install -y apache2');
+        }
+        logActivity($output,0);
+
+        $output = $this->connection->executeCommand($conn,'sudo dpkg --get-selections | grep mysql-server');
+        if ($output == ""){
+            $output = $this->connection->executeCommand($conn,'sudo apt install -y mysql-server');
+        }
+        logActivity($output,0);
+
+        $output = $this->connection->executeCommand($conn,'sudo dpkg --get-selections | grep php7.');
+        if ($output == ""){
+            $output = $this->connection->executeCommand($conn, 'sudo apt install -y php7.2 libapache2-mod-php7.2 php-mysql');
+        }
+        logActivity($output,0);
+
+        $output = $this->connection->executeCommand($conn, 'sudo dpkg --get-selections | grep unzip');
+        if ($output == ""){
+            $output = $this->connection->executeCommand($conn, 'sudo apt install -y unzip');      
+        }
+        $output = $this->connection->executeCommand($conn, "unzip MultiCS_Panel.zip -d /root/iptv_files");
+
+	}
 }
 
 
